@@ -46,7 +46,8 @@
                   <MenuItem mnemonicParsing="false" onAction="#stemingFxml" text="Стемінг" />
                   <MenuItem mnemonicParsing="false" onAction="#lemmFxml" text="Лемітизація" />
                   <MenuItem mnemonicParsing="false" onAction="#invertIndexFxml" text="Побудова інвертованого індексу" />
-                  <MenuItem mnemonicParsing="false" onAction="#invertIndexFxml" text="Пошук документів " />
+                  <MenuItem mnemonicParsing="false" onAction="#findDocumentsFxml" text="Пошук документів " />
+                  <MenuItem mnemonicParsing="false" onAction="#getCurrentDocuments" text="Вивести поточні документи" />
                </items>
             </Menu>
         </menus>

@@ -1,14 +1,10 @@
 package com.example.searchproject;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
+
 import org.tartarus.snowball.ext.englishStemmer;
 import edu.stanford.nlp.pipeline.*;
 import edu.stanford.nlp.ling.*;
-
-import java.util.List;
-import java.util.Properties;
 
 public class SearchHelper {
     private static final Set<String> STOP_WORDS = new HashSet<>(Arrays.asList(
@@ -60,7 +56,8 @@ public class SearchHelper {
     public static String lemmatizeText(String text) {
         // Налаштування для роботи з англійською мовою
         Properties props = new Properties();
-        props.setProperty("annotators", "tokenize,ssplit,pos,lemma");
+        props.setProperty("annotators", "tokenize, ssplit, pos, lemma");
+        props.setProperty("pos.model", "edu/stanford/nlp/models/pos-tagger/english-left3words/english-left3words-distsim.tagger");
         StanfordCoreNLP pipeline = new StanfordCoreNLP(props);
         CoreDocument document = new CoreDocument(text);
         pipeline.annotate(document);

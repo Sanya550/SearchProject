@@ -4,6 +4,7 @@ module com.example.searchproject {
     requires java.desktop;
     requires snowball.stemmer;
     requires stanford.corenlp;
+    requires lombok;
 
 
     opens com.example.searchproject to javafx.fxml;
