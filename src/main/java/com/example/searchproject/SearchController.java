@@ -164,7 +164,7 @@ public class SearchController {
                     }
 
                     if (nameOfFiles.isEmpty()) {
-                        result += word + "{}";
+                        result += word + "{}\n";
                     } else {
                         result += word + "{";
                         for (var name : nameOfFiles) {
