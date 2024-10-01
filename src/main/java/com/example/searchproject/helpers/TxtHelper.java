@@ -1,4 +1,4 @@
-package com.example.searchproject;
+package com.example.searchproject.helpers;
 
 import java.util.*;
 
@@ -6,7 +6,7 @@ import org.tartarus.snowball.ext.englishStemmer;
 import edu.stanford.nlp.pipeline.*;
 import edu.stanford.nlp.ling.*;
 
-public class SearchHelper {
+public class TxtHelper {
     private static final Set<String> STOP_WORDS = new HashSet<>(Arrays.asList(
             "the", "is", "in", "and", "or", "on", "with", "a", "an"
     ));

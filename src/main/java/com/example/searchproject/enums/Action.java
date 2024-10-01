@@ -1,4 +1,4 @@
-package com.example.searchproject;
+package com.example.searchproject.enums;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

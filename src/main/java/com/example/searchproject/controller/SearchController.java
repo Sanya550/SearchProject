@@ -1,6 +1,12 @@
-package com.example.searchproject;
+package com.example.searchproject.controller;
 
+import com.example.searchproject.enums.Action;
+import com.example.searchproject.helpers.ApiHelper;
+import com.example.searchproject.helpers.GeneralHelper;
+import com.example.searchproject.helpers.TxtHelper;
 import javafx.fxml.FXML;
+import javafx.scene.chart.BarChart;
+import javafx.scene.chart.XYChart;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 
@@ -11,9 +17,9 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.stream.Collectors;
 
-import static com.example.searchproject.GeneralHelper.getDataFromFile;
-import static com.example.searchproject.SearchHelper.doesTheTextContainsData;
-import static com.example.searchproject.SearchHelper.tokenizeWords;
+import static com.example.searchproject.helpers.GeneralHelper.getDataFromFile;
+import static com.example.searchproject.helpers.TxtHelper.doesTheTextContainsData;
+import static com.example.searchproject.helpers.TxtHelper.tokenizeWords;
 
 public class SearchController {
 
@@ -21,7 +27,10 @@ public class SearchController {
     private TextArea textArea;
 
     @FXML
-    private TextField inputPhrase;
+    private TextField input;
+
+    @FXML
+    private BarChart barChart;
 
     public static LinkedHashMap<String, String> txtMaps = new LinkedHashMap();
 
@@ -97,12 +106,33 @@ public class SearchController {
         applyAction(Action.GET_CURRENT_DOCUMENTS);
     }
 
+    @FXML
+    public void getDataAboutUrl() {
+        var url = input.getText().trim();
+        var code = ApiHelper.getResponseCode(url);
+        if (code == 200) {
+            var metrics = ApiHelper.getMozMetrics(url);
+            var text = "Code: " + code + "\nInternal Links: " + ApiHelper.getQuantityOfInternalLinks(url) + "\n" + metrics.replace(", ", ",\n");
+            textArea.setText(text);
+
+            var pageAuthority = ApiHelper.extractAuthorityMetrics(metrics, "page_authority");
+            var domainAuthority = ApiHelper.extractAuthorityMetrics(metrics, "domain_authority");
+            var series = new XYChart.Series();
+            series.setName("Authority Data");
+            series.getData().add(new XYChart.Data("Page Authority", pageAuthority));
+            series.getData().add(new XYChart.Data("Domain Authority", domainAuthority));
+            barChart.getData().add(series);
+        } else {
+            textArea.setText("Code: " + code);
+        }
+    }
+
     private void applyAction(Action action) {
         String result = "";
         switch (action) {
             case TO_LOWER_CASE:
                 for (var entry : txtMaps.entrySet()) {
-                    var newData = SearchHelper.toLowerCase(entry.getValue());
+                    var newData = TxtHelper.toLowerCase(entry.getValue());
                     txtMaps.put(entry.getKey(), newData);
                 }
                 JOptionPane.showMessageDialog(null, "Операція виконана", "Information", JOptionPane.INFORMATION_MESSAGE);
@@ -110,7 +140,7 @@ public class SearchController {
             case TOKENIZATION_BY_WORDS:
                 for (var entry : txtMaps.entrySet()) {
                     result += GeneralHelper.DEFAULT_;
-                    var array = SearchHelper.tokenizeWords(entry.getValue());
+                    var array = TxtHelper.tokenizeWords(entry.getValue());
                     result += entry.getKey() + ":\n";
                     for (var data :
                             array) {
@@ -123,7 +153,7 @@ public class SearchController {
             case TOKENIZATION_BY_SENTENCES:
                 for (var entry : txtMaps.entrySet()) {
                     result += GeneralHelper.DEFAULT_;
-                    var array = SearchHelper.tokenizeSentences(entry.getValue());
+                    var array = TxtHelper.tokenizeSentences(entry.getValue());
                     result += entry.getKey() + ":\n";
                     for (var data : array) {
                         result += data + "\n";
@@ -134,27 +164,27 @@ public class SearchController {
                 break;
             case REMOVE_STOP_WORDS:
                 for (var entry : txtMaps.entrySet()) {
-                    var newData = SearchHelper.removeStopWords(entry.getValue());
+                    var newData = TxtHelper.removeStopWords(entry.getValue());
                     txtMaps.put(entry.getKey(), newData);
                 }
                 JOptionPane.showMessageDialog(null, "Операція виконана", "Information", JOptionPane.INFORMATION_MESSAGE);
                 break;
             case STEMING:
                 for (var entry : txtMaps.entrySet()) {
-                    var newData = SearchHelper.steming(entry.getValue());
+                    var newData = TxtHelper.steming(entry.getValue());
                     txtMaps.put(entry.getKey(), newData);
                 }
                 JOptionPane.showMessageDialog(null, "Операція виконана", "Information", JOptionPane.INFORMATION_MESSAGE);
                 break;
             case LEMMING:
                 for (var entry : txtMaps.entrySet()) {
-                    var newData = SearchHelper.lemmatizeText(entry.getValue());
+                    var newData = TxtHelper.lemmatizeText(entry.getValue());
                     txtMaps.put(entry.getKey(), newData);
                 }
                 JOptionPane.showMessageDialog(null, "Операція виконана", "Information", JOptionPane.INFORMATION_MESSAGE);
                 break;
             case INVERT_LIST:
-                var words = tokenizeWords(inputPhrase.getText());
+                var words = tokenizeWords(input.getText());
                 for (var word : words) {
                     var nameOfFiles = new ArrayList<String>();
                     for (var entry : txtMaps.entrySet()) {
@@ -177,7 +207,7 @@ public class SearchController {
                 textArea.setText(result);
                 break;
             case FIND_DOCUMENT:
-                var word = inputPhrase.getText();
+                var word = input.getText();
                 var list = new ArrayList<String>();
                 for (var entry : SearchController.txtMaps.entrySet()) {
                     if (entry.getValue().contains(word)) {

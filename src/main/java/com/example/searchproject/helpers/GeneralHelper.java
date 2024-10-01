@@ -1,4 +1,4 @@
-package com.example.searchproject;
+package com.example.searchproject.helpers;
 
 import java.io.IOException;
 import java.nio.file.Files;
