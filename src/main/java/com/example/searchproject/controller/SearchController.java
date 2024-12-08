@@ -3,16 +3,20 @@ package com.example.searchproject.controller;
 import com.example.searchproject.enums.Action;
 import com.example.searchproject.helpers.ApiHelper;
 import com.example.searchproject.helpers.GeneralHelper;
+import com.example.searchproject.helpers.PersonalHelper;
 import com.example.searchproject.helpers.TxtHelper;
 import javafx.fxml.FXML;
 import javafx.scene.chart.BarChart;
 import javafx.scene.chart.XYChart;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileSystemView;
 import java.io.File;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.stream.Collectors;
@@ -28,11 +32,29 @@ public class SearchController {
 
     @FXML
     private TextField input;
+    @FXML
+    private CheckBox descriptionCheckBox;
+
+    @FXML
+    private CheckBox addressCheckbox;
+
+    @FXML
+    private CheckBox hourCheckbox;
+
+    @FXML
+    private TextField additionalDescriptionInput;
+
+    @FXML
+    private TextField addressInput;
+
+    @FXML
+    private TextField hourInput;
 
     @FXML
     private BarChart barChart;
 
     public static LinkedHashMap<String, String> txtMaps = new LinkedHashMap();
+    private PersonalHelper personalHelper = new PersonalHelper();
 
     @FXML
     public void readFiles() {
@@ -125,6 +147,32 @@ public class SearchController {
         } else {
             textArea.setText("Code: " + code);
         }
+    }
+
+    @FXML
+    public void findRestaurants() {
+        var address = addressInput.getText().trim();
+        var additionalDesc = additionalDescriptionInput.getText().trim();
+        var hour = hourInput.getText().isEmpty() ? ZonedDateTime.now(ZoneId.of("Europe/Kiev")).getHour() : Integer.parseInt(hourInput.getText());
+        if (!addressCheckbox.isSelected()) {
+            address = "";
+        }
+        if (!descriptionCheckBox.isSelected()) {
+            additionalDesc = "";
+        }
+        if (!hourCheckbox.isSelected()) {
+            hour = -1;
+        }
+        var restaurants = personalHelper.getRestaurantsByFilter(address, hour, additionalDesc);
+
+        String result = "Результати пошуку:\n";
+        if (restaurants.isEmpty()) {
+            result += "Немає ресторанів за обраними фільтрами";
+        }
+        for (var restaurant : restaurants) {
+            result += "Назва ресторану: " + restaurant.getName() + ", адреса: " + restaurant.getAddress()+"\n";
+        }
+        textArea.setText(result);
     }
 
     private void applyAction(Action action) {

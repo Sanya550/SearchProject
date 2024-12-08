@@ -9,6 +9,7 @@ module com.example.searchproject {
     requires org.apache.httpcomponents.httpcore;
     requires org.apache.httpcomponents.httpclient;
     requires org.json;
+    requires java.sql;
 
 
     opens com.example.searchproject to javafx.fxml;
